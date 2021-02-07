@@ -1,0 +1,4 @@
+[17808:17108:0206/215312.474:ERROR:device_event_log_impl.cc(211)] [21:53:12.473] USB: usb_device_handle_win.cc:1049 Failed to read descriptor from node connection: Um dispositivo conectado ao sistema não está funcionando. (0x1F)
+[17808:17108:0206/215312.475:ERROR:device_event_log_impl.cc(211)] [21:53:12.475] USB: usb_device_handle_win.cc:1049 Failed to read descriptor from node connection: Um dispositivo conectado ao sistema não está funcionando. (0x1F)
+[17808:17108:0206/215643.121:ERROR:device_event_log_impl.cc(211)] [21:56:43.121] USB: usb_service_win.cc:258 Failed to get device driver name: Elemento não encontrado. (0x490)
+[17808:17108:0206/221916.983:WARNING:pref_notifier_impl.cc(40)] Pref observer for media_router.cast_allow_all_ips found at shutdown.
