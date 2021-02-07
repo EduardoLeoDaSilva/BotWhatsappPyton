@@ -3,8 +3,8 @@ import os
 from time import sleep
 import requests
 import json
-
-
+from collections import deque
+from threading import Thread
 class zapbot:
     # O local de execução do nosso script
     dir_path = os.getcwd()
@@ -26,28 +26,47 @@ class zapbot:
         # Aguarda alguns segundos para validação manual do QrCode
         self.driver.implicitly_wait(15)
 
-    def consultarPedido(self, pedido):
-        payload = {'VendaId': pedido, 'Integrador': 'SAV'}
+    def consultarPedido(self):
+       while True: 
+        if len(filaConsulta)  > 0 :
+          pedido = filaConsulta[0]
+          payload = {'VendaId': pedido, 'Integrador': 'SAV'}
 
-        headers = {'content-type': 'application/json'}
-        r = requests.post('http://localhost:5000/Status/ConsultaPedido',
+          headers = {'content-type': 'application/json'}
+          r = requests.post('http://localhost:5000/Status/ConsultaPedido',
                           data=json.dumps(payload), headers=headers)
-        r.encoding = 'ISO-8859-1'
-        if r.status_code == 200:
-          bot.envia_msg(r.text)
-        else:
-          bot.envia_msg("Ocorreu um erro ao consulta o pedido")
+          r.encoding = 'ISO-8859-1'
+          if r.status_code == 200:
+            bot.envia_msg(r.text)
+            filaConsulta.popleft()
+          elif r.status_code == 202:
+            bot.envia_msg("Pedido não encontrado!")
+            filaConsulta.popleft()
+          else:
+            bot.envia_msg("Ocorreu um erro ao consultar o pedido!")
+            filaConsulta.popleft()
         
 
 
-    def reprocessaPedido(self, pedido):
-        payload = {'CodigoWooza': pedido}
+    def reprocessaPedido(self):
+        while True:
+            if len(filaReprocessa)  > 0 :
+               pedido = filaReprocessa[0]
+               payload = {'CodigoWooza': pedido}
 
-        headers = {'content-type': 'application/json'}
-        r = requests.post('http://localhost:5000/Status/ReprocessarPedido',
-                          data=json.dumps(payload), headers=headers)
-        r.encoding = 'ISO-8859-1'
-        bot.envia_msg(r.text)
+               headers = {'content-type': 'application/json'}
+               r = requests.post('http://localhost:5000/Status/ReprocessarPedido',
+                                 data=json.dumps(payload), headers=headers)
+               if r.status_code == 200:
+                 r.encoding = 'ISO-8859-1'
+                 bot.envia_msg(r.text)
+                 filaReprocessa.popleft()
+               elif r.status_code == 202:
+                 bot.envia_msg("Pedido não encontrado!")
+                 filaConsulta.popleft()
+               else:
+                 bot.envia_msg("Ocorreu um erro ao reprocessar o pedido")
+                 filaReprocessa.popleft()                  
 
     def ultima_msg(self):
         """ Captura a ultima mensagem da conversa """
@@ -109,7 +128,7 @@ class zapbot:
             # self.caixa_de_pesquisa = self.driver.find_element_by_class_name("jN-F5")
             # Digita o nome ou numero do contato
             # self.caixa_de_pesquisa.send_keys(contato)
-            sleep(10)
+            sleep(5)
             # Seleciona o contato
             # self.contato = self.driver.find_element_by_xpath("//span[@title = '{}']".format(contato))
             self.contato = self.driver.find_element_by_xpath(
@@ -120,29 +139,49 @@ class zapbot:
             self.contato.click()
         except Exception as e:
             raise e
+    
+    def fluxo_tratamento(self):
+       msg = ""
+       while msg != "/quit":
+         try:
+           sleep(0.2)
+           msg = bot.ultima_msg()
+           msgsplit = msg.split()
+           if msgsplit[0] == "Consultar" :
+               if msgsplit[1] not in filaConsulta:
+                 filaConsulta.append(msgsplit[1])
+              # bot.consultarPedido(msgsplit[1])
+              # bot.envia_msg("""Bot: Esse é um texto com os comandos válidos:
+              #     /help (para ajuda)
+              #     /mais (para saber mais)
+              #     /quit (para sair)
+              #     """)
+           elif msgsplit[0] == "Reprocessar":
+               if msgsplit[1] not in filaReprocessa:
+                   filaReprocessa.append(msgsplit[1])
+                #  bot.reprocessaPedido(msgsplit[1])
+           elif msg == "/quit":
+              bot.envia_msg("Bye bye!")
+         except Exception as e:
+          raise e    
 
 
 bot = zapbot()
-bot.abre_conversa("WoozaHelp")
+bot.abre_conversa("Mãe")
+
 # bot.consultarPedido("SA385199")
 # bot.envia_msg("Olá, sou o bot whatsapp! Para receber ajuda digite: /help")
 imagem = bot.dir_path + "/imagem.jpg"
 msg = ""
-while msg != "/quit":
-    try:
-     sleep(1)
-     msg = bot.ultima_msg()
-     msgsplit = msg.split()
-     if msgsplit[0] == "Consultar" :
-        bot.consultarPedido(msgsplit[1])
-        # bot.envia_msg("""Bot: Esse é um texto com os comandos válidos:
-        #     /help (para ajuda)
-        #     /mais (para saber mais)
-        #     /quit (para sair)
-        #     """)
-     elif msgsplit[0] == "Reprocessar":
-        bot.reprocessaPedido(msgsplit[1])
-     elif msg == "/quit":
-        bot.envia_msg("Bye bye!")
-    except Exception as e:
-      raise e
+filaConsulta = deque([])
+filaReprocessa = deque([])
+t = Thread(target=bot.consultarPedido)
+t2 = Thread(target=bot.fluxo_tratamento)
+t3 = Thread(target=bot.reprocessaPedido)
+t.start()
+t2.start()
+t3.start()
+while True:
+    pass
+
+

@@ -1,3 +1,8 @@
-2021/02/06-21:14:29.392 21c0 Reusing MANIFEST C:\Users\eduar\OneDrive\Desktop\Botwhats\whatsbot\profile\wpp\Default\Local Storage\leveldb/MANIFEST-000001
-2021/02/06-21:14:29.394 21c0 Recovering log #9
-2021/02/06-21:14:29.395 21c0 Reusing old log C:\Users\eduar\OneDrive\Desktop\Botwhats\whatsbot\profile\wpp\Default\Local Storage\leveldb/000009.log 
+2021/02/07-12:05:52.200 7340 Reusing MANIFEST C:\Users\Dud\Desktop\Whatsapp bot\BotWhatsappPyton\profile\wpp\Default\Local Storage\leveldb/MANIFEST-000001
+2021/02/07-12:05:52.201 7340 Recovering log #3
+2021/02/07-12:05:52.202 7340 Level-0 table #3: started
+2021/02/07-12:05:52.205 7340 Level-0 table #3: 29899 bytes OK
+2021/02/07-12:05:52.206 7340 Recovering log #4
+2021/02/07-12:05:52.206 7340 Reusing old log C:\Users\Dud\Desktop\Whatsapp bot\BotWhatsappPyton\profile\wpp\Default\Local Storage\leveldb/000004.log 
+2021/02/07-12:05:52.208 7340 Delete type=0 #3
+2021/02/07-12:05:52.208 7340 Delete type=2 #5
