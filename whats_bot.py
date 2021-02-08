@@ -63,7 +63,7 @@ class zapbot:
                  filaReprocessa.popleft()
                elif r.status_code == 202:
                  bot.envia_msg("Pedido não encontrado!")
-                 filaConsulta.popleft()
+                 filaReprocessa.popleft()
                else:
                  bot.envia_msg("Ocorreu um erro ao reprocessar o pedido")
                  filaReprocessa.popleft()                  
@@ -83,13 +83,14 @@ class zapbot:
     def envia_msg(self, msg):
         """ Envia uma mensagem para a conversa aberta """
         try:
-            sleep(2)
+            # sleep(2)
             # Seleciona acaixa de mensagem
             self.caixa_de_mensagem = self.driver.find_element_by_class_name(
                 "DuUXI")
+            sleep(2)
             # Digita a mensagem
             self.caixa_de_mensagem.send_keys(msg)
-            sleep(10)
+            sleep(5)
             # Seleciona botão enviar
             self.botao_enviar = self.driver.find_element_by_xpath(
                 "//span[@data-icon='send']")
@@ -97,7 +98,8 @@ class zapbot:
             self.botao_enviar.click()
             sleep(2)
         except Exception as e:
-            print("Erro ao enviar msg", e)
+            print("Erro ao enviar msg, tentando novamente", e)
+            self.envia_msg(msg)
 
     def envia_media(self, fileToSend):
         """ Envia media """
@@ -128,7 +130,7 @@ class zapbot:
             # self.caixa_de_pesquisa = self.driver.find_element_by_class_name("jN-F5")
             # Digita o nome ou numero do contato
             # self.caixa_de_pesquisa.send_keys(contato)
-            sleep(5)
+            sleep(1)
             # Seleciona o contato
             # self.contato = self.driver.find_element_by_xpath("//span[@title = '{}']".format(contato))
             self.contato = self.driver.find_element_by_xpath(
@@ -138,7 +140,8 @@ class zapbot:
             # Entra na conversa
             self.contato.click()
         except Exception as e:
-            raise e
+            print("Erro ao tentar abrir contato, tentando novamente")
+            self.abre_conversa(contato)
     
     def fluxo_tratamento(self):
        msg = ""
@@ -163,7 +166,7 @@ class zapbot:
            elif msg == "/quit":
               bot.envia_msg("Bye bye!")
          except Exception as e:
-          raise e    
+           print("Erro")  
 
 
 bot = zapbot()
@@ -181,7 +184,3 @@ t3 = Thread(target=bot.reprocessaPedido)
 t.start()
 t2.start()
 t3.start()
-while True:
-    pass
-
-
