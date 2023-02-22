@@ -1,5 +1,5 @@
 # whatsbot
-Bot simples para automação de whatsapp (Desenvolvi no Windows, não testei em uma distro Linux, mas deve funcionar normalmente)
+Bot simples para automação de whatsapp 
 
 #### Baixe a versão do chromedriver de acordo com a sua versão do Google Chrome
 http://chromedriver.chromium.org/downloads
